@@ -1,13 +1,16 @@
 from matrix import *
 from random import randint
 
+def logmsg(message):
+    print(message)
+    
 # Tests printing the matrix
-def testInit(iters, maxRows=20, maxCols=20):
+def testInit(iters, maxRows=5, maxCols=5):
     
     # Try edgecases
     print("Default Matrix: ")
     matrix = Matrix()
-    matrix.printtMatrix()
+    matrix.printMatrix()
     print("")
     
     print("Invalid rows: ", end='')
@@ -30,5 +33,5 @@ def testInit(iters, maxRows=20, maxCols=20):
         
         print("{}x{}: ".format(rows,cols))
         matrix = Matrix(rows,cols)
-        matrix.printtMatrix()
+        matrix.printMatrix()
         print("")

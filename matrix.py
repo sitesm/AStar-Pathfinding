@@ -17,12 +17,45 @@ class Matrix():
     # Initalizes a clean matrix
     def initMatrix(self):
         for row in range(self.rows):
-            row = []
+            newRow = []
             for col in range(self.cols):
-                row.append(0)
-            self.matrix.append(row)
+                node = Node(row,col,0)
+                newRow.append(node)
+            self.matrix.append(newRow)
     
+    def setValue(self, row, col, val):
+        self.matrix[row][col].value = val
+                
+    # Returns the node at the given row/column
+    def getNode(self, row, col):
+        return self.matrix[row][col]
+        
     # Prints matrix
-    def printtMatrix(self):
+    def printMatrix(self):
         for row in self.matrix:
-            print(row)
+            print("[", end='')
+            for col in row:
+                print(str(col.value) + ",", end='') if col != row[-1] else print(str(col.value), end='')
+            print("]")
+        print("\n")
+
+            
+class Node():
+    
+    def __init__(self, row, col, value):
+        self.row = row
+        self.col = col
+        self.f = float('inf')
+        self.g = float('inf')
+        self.h = float('inf')
+        self.parent = None
+        self.value = value
+    
+    # Gets the huristic estimation to the end node
+    def setHuristic(self, endCords):
+        # Pathageran therom estimation
+        self.h = (self.row - endCords[0])**2 + (self.col-endCords[1])**2   
+
+    def __str__(self):
+        return "({},{}): f={},g={},h={}".format(self.row,self.col,self.f,self.g,self.h)
+        
