@@ -8,6 +8,8 @@ class AStarGUI():
         # Parameters/Variables
         self.width  = 600
         self.height = 500
+        self.buttonWidth=100
+        self.buttonHeight=100
         self.matrix = Matrix()
         self.window = tk.Tk()
         
@@ -22,7 +24,16 @@ class AStarGUI():
         # Window Setup
         self.window.title("AStar Algorithm Visualizer")
         self.window.geometry("{}x{}".format(self.width,self.height))
-
+        
+    
+    # Updates window size to match the size of the matrix buttons
+    def updateWindowSize(self):
+        totalWidth = self.matrix.cols *(self.buttonWidth)
+        totalHeight = self.matrix.rows *(self.buttonHeight)
+        self.width = totalWidth
+        self.height = totalHeight
+        self.window.geometry("{}x{}".format(totalWidth, totalHeight))
+        
     # Removes the placeholders for the maze size inputs
     def removePlaceholder(self, event):
         widget = event.widget
@@ -48,7 +59,10 @@ class AStarGUI():
         # Get new size and udpate matrix accordingly
         rows = int(self.xSizeEntry.get() if (self.xSizeEntry.get() != 0 and self.xSizeEntry.get()!="") else 1)
         cols = int(self.ySizeEntry.get() if (self.ySizeEntry.get() != 0 and self.ySizeEntry.get()!="") else 1)
+
+        # Update matrix and window
         self.matrix.updateSize(rows,cols)
+        self.updateWindowSize()
         
         if doLogging: 
             logmsg("New # Rows: " + str(rows))
@@ -56,12 +70,28 @@ class AStarGUI():
             self.matrix.printMatrix()
         
         # Create the buttons for each node in the matrix
-        #for row in range(self.matrix.rows):
-        #    for col in range(self.matrix.cols):
-        #        node = self.matrix.getNode(row,col)
-        #        node.tkButton = tk.Button(self.window, )
+        # Each button links to toggleWall()
+        for row in range(self.matrix.rows):
+            self.window.grid_rowconfigure(row+1, weight=1)
+            for col in range(self.matrix.cols):
+                node = self.matrix.getNode(row,col)
+                node.tkButton = tk.Button(self.window, bg="blue",command=lambda r=row,c=col: self.toggleWall(r,c), 
+                                          width=self.buttonWidth, height=self.buttonHeight)
+                node.tkButton.grid(row=row+1, column=col, padx=0, pady=0)
+                self.window.grid_columnconfigure(col, weight=1)
                 
-
+    
+    # Toggles node value and changes the color
+    def toggleWall(self, row, col):
+        node = self.matrix.getNode(row,col)
+        if doLogging: logmsg("Node value toggled: Old={}, New={}".format(node.value, (0 if node.value == 1 else 1)))
+        if node.value == 0:
+            node.value = 1
+            node.button.configure(bg="gray", activebackground="lightblue")
+        else:
+            node.value = 0
+            node.button.configure(bg="", activebackground="lightblue")
+        
     # Creates the GUI
     def start(self):
         

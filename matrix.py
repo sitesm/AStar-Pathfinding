@@ -1,3 +1,4 @@
+from shared import *
 
 class Matrix():
     
@@ -26,13 +27,24 @@ class Matrix():
     def setValue(self, row, col, val):
         self.matrix[row][col].value = val
     
-    # Clears matricx and re initalizes new size
+    # Clears matrix and re initalizes new size
+    # Destroys all buttons in the process
     def updateSize(self, newRows, newCols):
+        self.destroyButtons()
         self.rows = newRows
         self.cols = newCols
         self.matrix.clear()
         self.initMatrix()
-                   
+     
+    # Destorys every nodes button
+    def destroyButtons(self):
+        for row in range(self.rows):
+            for col in range(self.cols):
+                node = self.getNode(row,col)
+                if node.tkButton != None:
+                    node.tkButton.destroy()
+                    node.tkButton = None
+                       
     # Returns the node at the given row/column
     def getNode(self, row, col):
         return self.matrix[row][col]
@@ -57,7 +69,7 @@ class Node():
         self.h = float('inf')
         self.parent = None
         self.value = value
-        self.button = None
+        self.tkButton = None
     
     # Gets the huristic estimation to the end node
     def setHuristic(self, endCords):
