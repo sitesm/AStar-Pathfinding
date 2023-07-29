@@ -25,7 +25,14 @@ class Matrix():
     
     def setValue(self, row, col, val):
         self.matrix[row][col].value = val
-                
+    
+    # Clears matricx and re initalizes new size
+    def updateSize(self, newRows, newCols):
+        self.rows = newRows
+        self.cols = newCols
+        self.matrix.clear()
+        self.initMatrix()
+                   
     # Returns the node at the given row/column
     def getNode(self, row, col):
         return self.matrix[row][col]
@@ -50,6 +57,7 @@ class Node():
         self.h = float('inf')
         self.parent = None
         self.value = value
+        self.button = None
     
     # Gets the huristic estimation to the end node
     def setHuristic(self, endCords):

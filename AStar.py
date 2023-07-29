@@ -1,6 +1,6 @@
 from matrix import *
-from main import doLogging
-from test import logmsg 
+from shared import *
+
 
 # returns a list of all neighboring nodes (with bound checking)
 def getNeighbors(matrix, node, xbound, ybound):
