@@ -8,7 +8,7 @@ def main():
     if doTest:
         testInit(5)
     
-    GUI = AStarGUI()
+    GUI = AStarGUI(800,800)
     GUI.start()
         
 if __name__ == "__main__":

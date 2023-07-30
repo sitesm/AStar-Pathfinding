@@ -6,30 +6,62 @@ class AStarGUI():
     
     def __init__(self, width=600, height=500):
         # Parameters/Variables
-        self.width  = 600
-        self.height = 500
-        self.buttonWidth=100
-        self.buttonHeight=100
+        self.width  = width
+        self.height = height
+        self.startCoord = []
+        self.endCoord = []
+        self.setStart = False
+        self.setEnd = False
+        self.buttonWidth=int(width/5)
+        self.buttonHeight=int(height/5)
         self.matrix = Matrix()
         self.window = tk.Tk()
         
+        # Topbar frame
+        self.mazeSizeFrame = tk.Frame(self.window)
+        self.mazeSizeFrame.grid(row=0, column=0)
+        
+        self.resetFrame = tk.Frame(self.window)
+        self.resetFrame.grid(row=0, column=1)
+        
+        self.runFrame = tk.Frame(self.window)
+        self.runFrame.grid(row=0, column=2)
+        
+        self.startFrame = tk.Frame(self.window)
+        self.startFrame.grid(row=0, column=3)
+        
+        self.endFrame = tk.Frame(self.window)
+        self.endFrame.grid(row=0, column=4)
+        
         # Entrys
-        self.xSizeEntry = tk.Entry(self.window)
-        self.ySizeEntry = tk.Entry(self.window)
+        self.xSizeEntry = tk.Entry(self.mazeSizeFrame, width=5)
+        self.ySizeEntry = tk.Entry(self.mazeSizeFrame, width=5)
         
         # Labels
-        self.sizeLabel = tk.Label(self.window, text="Maze Size: ")
-        self.xSeperator = tk.Label(self.window, text="x")
+        self.sizeLabel = tk.Label(self.mazeSizeFrame, text="Maze Size: ")
+        self.xSeperator = tk.Label(self.mazeSizeFrame, text="x")
         
+        # Buttons
+        self.runButton = tk.Button(self.runFrame, command=self.runAStar, width=22,
+                                   text="Go!", bg="green", anchor="center", justify="center")
+        
+        self.resetButton = tk.Button(self.resetFrame, command=self.resetMaze, width=22,
+                                   text="Reset", bg="orange", anchor="center", justify="center")
+        
+        self.startButton = tk.Button(self.startFrame, command=self.setStartCoord, width=22,
+                                   text="Start Coord", bg="purple", anchor="center", justify="center")
+        
+        self.endButton = tk.Button(self.endFrame, command=self.setEndCoord, width=22,
+                                   text="End Coord", bg="red", anchor="center", justify="center")
+         
         # Window Setup
         self.window.title("AStar Algorithm Visualizer")
-        self.window.geometry("{}x{}".format(self.width,self.height))
-        
+        self.window.geometry("{}x{}".format(self.width,self.height))    
     
     # Updates window size to match the size of the matrix buttons
     def updateWindowSize(self):
-        totalWidth = self.matrix.cols *(self.buttonWidth)
-        totalHeight = self.matrix.rows *(self.buttonHeight)
+        totalWidth = self.matrix.cols * (self.buttonWidth)
+        totalHeight = self.matrix.rows * (self.buttonHeight)
         self.width = totalWidth
         self.height = totalHeight
         self.window.geometry("{}x{}".format(totalWidth, totalHeight))
@@ -55,6 +87,7 @@ class AStarGUI():
         return userInput.isdigit() or userInput == ""
 
     # Updates the maze size
+    # Main function that connects with GUI and AStart algorithm
     def updateMazeSize(self, event):
         # Get new size and udpate matrix accordingly
         rows = int(self.xSizeEntry.get() if (self.xSizeEntry.get() != 0 and self.xSizeEntry.get()!="") else 1)
@@ -75,22 +108,45 @@ class AStarGUI():
             self.window.grid_rowconfigure(row+1, weight=1)
             for col in range(self.matrix.cols):
                 node = self.matrix.getNode(row,col)
-                node.tkButton = tk.Button(self.window, bg="blue",command=lambda r=row,c=col: self.toggleWall(r,c), 
+                node.tkButton = tk.Button(self.window,command=lambda r=row,c=col: self.toggleWall(r,c), 
                                           width=self.buttonWidth, height=self.buttonHeight)
                 node.tkButton.grid(row=row+1, column=col, padx=0, pady=0)
                 self.window.grid_columnconfigure(col, weight=1)
                 
-    
     # Toggles node value and changes the color
     def toggleWall(self, row, col):
         node = self.matrix.getNode(row,col)
+        
         if doLogging: logmsg("Node value toggled: Old={}, New={}".format(node.value, (0 if node.value == 1 else 1)))
+            
         if node.value == 0:
             node.value = 1
-            node.button.configure(bg="gray", activebackground="lightblue")
+            node.tkButton.configure(bg="gray", activebackground="lightblue")
         else:
             node.value = 0
-            node.button.configure(bg="", activebackground="lightblue")
+            node.tkButton.configure(bg="#f0f0f0",activebackground="lightblue")
+        
+        if doLogging: self.matrix.printMatrix()
+        
+    # Runs the AStar algorithm
+    def runAStar(self):
+        path = AStar(self.matrix, [0,0], [4,4])
+        if path != None:
+            for node in path:
+                node.tkButton.configure(bg="green")
+    
+    # Simple reset of maze        
+    def resetMaze(self):
+        self.updateMazeSize("NULL")
+        
+    # Sets the start coordinate
+    def setStartCoord(self):
+        return
+    
+    # Sets the end coordinate
+    def setEndCoord(self):
+        return
+        
         
     # Creates the GUI
     def start(self):
@@ -112,6 +168,12 @@ class AStarGUI():
         self.ySizeEntry.bind("<FocusIn>", self.removePlaceholder)
         self.ySizeEntry.bind("<FocusOut>", self.setPlaceholder)
         self.ySizeEntry.bind("<KeyRelease>", self.updateMazeSize)
+        
+        self.runButton.grid(row=0, column=0)
+        self.resetButton.grid(row=0, column=0)
+        self.resetButton.grid(row=0, column=0)
+        self.resetButton.grid(row=0, column=0)
+        
 
         # Initalize Matrix
         self.updateMazeSize("NULL")

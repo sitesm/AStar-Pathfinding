@@ -66,7 +66,7 @@ def AStar(matrix, startCords, endCords):
                 print("({}) ".format(idx) + str(node))
                 idx += 1
  
-            return True
+            return path
         
         # get all (bound checked) neighbor nodes of current node
         neighbors = getNeighbors(matrix, currentNode, matrix.rows-1, matrix.cols-1)
@@ -131,6 +131,7 @@ def AStar(matrix, startCords, endCords):
                 
         if doLogging: logmsg("-----------------------------------------------------------")
     print("No path found!")
+    return None
 
         
         
